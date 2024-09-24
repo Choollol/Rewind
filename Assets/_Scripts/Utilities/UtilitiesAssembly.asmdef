@@ -1,0 +1,16 @@
+{
+    "name": "UtilitiesAssembly",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1b1e75fa7b4fe644798e1a972ca50f57"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
