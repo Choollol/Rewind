@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,8 +12,6 @@ public class GameManager : MonoBehaviour
     public static bool isGameActive { get; private set; }
 
     public static int level {  get; private set; }
-    private int levelCount = 3;
-    [SerializeField] private int startingLevel;
 
     public static bool isInSceneTransit { get; private set; }
     public static bool isGameCompleted { get; private set; }
@@ -21,12 +20,15 @@ public class GameManager : MonoBehaviour
 
     public static bool canRewind = true;
 
+    [SerializeField] private TextMeshProUGUI levelText;
+
     private void OnEnable()
     {
         EventMessenger.StartListening("LevelComplete", NextLevel);
         EventMessenger.StartListening("FreezeTime", FreezeTime);
         EventMessenger.StartListening("UnfreezeTime", UnfreezeTime);
         EventMessenger.StartListening("Restart", Restart);
+        EventMessenger.StartListening("TransitionEnded", EndTransition);
     }
     private void OnDisable()
     {
@@ -34,27 +36,25 @@ public class GameManager : MonoBehaviour
         EventMessenger.StopListening("FreezeTime", FreezeTime);
         EventMessenger.StopListening("UnfreezeTime", UnfreezeTime);
         EventMessenger.StopListening("Restart", Restart);
+        EventMessenger.StopListening("TransitionEnded", EndTransition);
     }
 
     void Start()
     {
         isGameActive = true;
 
-        level = startingLevel;
+        level = int.Parse(SceneManager.GetSceneAt(1).name.Split(" ")[1]);
     }
     private void Update()
     {
-        if (Input.GetButtonDown("Restart"))
+        if (Input.GetButtonDown("Restart") && !isGameCompleted && isGameActive)
         {
             Restart();
         }
     }
     private void Restart()
     {
-        if (level >= levelCount)
-        {
-            return;
-        }
+        FreezeTime();
         SceneManager.UnloadSceneAsync("Level " + level);
         LoadLevel();
     }
@@ -76,8 +76,8 @@ public class GameManager : MonoBehaviour
     private IEnumerator TransitionLevel(int newLevel)
     {
         isInSceneTransit = true;
-        EventMessenger.TriggerEvent("StartTransition");
         isGameActive = false;
+        EventMessenger.TriggerEvent("StartTransition");
         yield return new WaitForSeconds(2);
         if (isGameCompleted)
         {
@@ -90,26 +90,31 @@ public class GameManager : MonoBehaviour
         level = newLevel;
         LoadLevel();
         yield return new WaitForSeconds(0.5f);
-        EventMessenger.TriggerEvent("EndTransition");
-        yield return new WaitForSeconds(1f);
+        EventMessenger.TriggerEvent("EndTransition");        
+        yield break;
+    }
+    private void EndTransition()
+    {
         isGameActive = true;
         isInSceneTransit = false;
-        yield break;
     }
     private void LoadLevel()
     {
         if (SceneUtility.GetBuildIndexByScenePath("Level " + level) != -1)
         {
             SceneManager.LoadSceneAsync("Level " + level, LoadSceneMode.Additive);
-            //levelNumberText.gameObject.SetActive(true);
-            //UpdateLevelNumberText();
+            UpdateLevelText();
         }
         else
         {
             SceneManager.LoadSceneAsync("End Scene", LoadSceneMode.Additive);
             isGameCompleted = true;
-            //levelNumberText.gameObject.SetActive(false);
+            levelText.gameObject.SetActive(false);
         }
+        UnfreezeTime();
     }
-    
+    private void UpdateLevelText()
+    {
+        levelText.text = level.ToString();
+    }
 }

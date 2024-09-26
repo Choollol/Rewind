@@ -39,8 +39,6 @@ public class InputController : MonoBehaviour
     public virtual void Start()
     {
         canAct = true;
-
-        SceneManager.SetActiveScene(gameObject.scene);
     }
     public virtual void Update()
     {

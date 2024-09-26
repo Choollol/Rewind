@@ -7,6 +7,9 @@ TagManager:
   - Wall
   - Ground
   - Death
+  - Bounce
+  - BounceGate
+  - StaticGate
   layers:
   - Default
   - TransparentFX

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerInputController : InputController
 {
@@ -24,6 +25,8 @@ public class PlayerInputController : InputController
     {
         base.Start();
 
+        SceneManager.SetActiveScene(gameObject.scene);
+
         inputType = InputType.Player;
 
         boxCollider = GetComponent<BoxCollider2D>();
@@ -32,7 +35,16 @@ public class PlayerInputController : InputController
     }
     public override void Update()
     {
-        if (Input.GetButtonDown("Rewind") && GameManager.canRewind && GameManager.isGameActive)
+        base.Update();
+
+        if (GameManager.isGameActive)
+        {
+            horizontalInput = direction == Direction.Right ? 1 : -1;
+        }
+
+        doJump = false;
+        if (Input.GetButtonDown("Rewind") && GameManager.canRewind && GameManager.isGameActive && 
+            GetComponent<PlayerRewinder>().rewinds > 0)
         {
             StartCoroutine(StartRewind());
         }
@@ -49,8 +61,6 @@ public class PlayerInputController : InputController
         EventMessenger.TriggerEvent("Rewind");
         EventMessenger.TriggerEvent("UnfreezeTime");
         ResetDirection();
-        yield return new WaitForSeconds(0.5f);
-        GameManager.canRewind = true;
         yield break;
     }
     private void ResetDirection()
@@ -70,29 +80,24 @@ public class PlayerInputController : InputController
         if (direction == Direction.Left)
         {
             direction = Direction.Right;
-            horizontalInput = 1;
+            //horizontalInput = 1;
         }
         else if (direction == Direction.Right)
         {
             direction = Direction.Left;
-            horizontalInput = -1;
+            //horizontalInput = -1;
         }
     }
     private void OnCollisionStay2D(Collision2D collision)
     {
         Collider2D collisionCollider = collision.gameObject.GetComponent<Collider2D>();
 
-        if (collision.gameObject.CompareTag("Wall") && 
-            (direction == Direction.Left && transform.position.x > collision.transform.position.x || 
-            direction == Direction.Right && transform.position.x < collision.transform.position.x) && 
+        if (//collision.gameObject.CompareTag("Wall") && 
+            ((direction == Direction.Left && boxCollider.bounds.min.x > collisionCollider.bounds.max.x) || 
+            (direction == Direction.Right && boxCollider.bounds.max.x < collisionCollider.bounds.min.x)) && 
             (boxCollider.bounds.min.y < collisionCollider.bounds.max.y - 0.1f))
         {
             ToggleDirection();
-        }
-        else if (collision.gameObject.CompareTag("Death"))
-        {
-            AudioPlayer.PlaySound("Death Sound");
-            EventMessenger.TriggerEvent("Restart");
         }
     }
 }

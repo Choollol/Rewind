@@ -46,6 +46,7 @@ public class Transition : MonoBehaviour
             image.color -= new Color(0, 0, 0, speed * Time.deltaTime);
             yield return null;
         }
+        EventMessenger.TriggerEvent("TransitionEnded");
         yield break;
     }
 }
