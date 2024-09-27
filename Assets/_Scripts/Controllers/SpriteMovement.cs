@@ -42,30 +42,28 @@ public class SpriteMovement : MonoBehaviour
     [SerializeField] protected float speed;
 
     protected Vector2 additionalForce;
-    protected Vector2 additionalForceDecrement;
+    [SerializeField] protected Vector2 additionalForceDecrement;
     public virtual void OnEnable()
     {
         EventMessenger.StartListening("DisableInputControllerAction", InputControllerDisabled);
+        EventMessenger.StartListening("LevelComplete", FreezeMovement);
     }
     public virtual void OnDisable()
     {
         EventMessenger.StopListening("DisableInputControllerAction", InputControllerDisabled);
+        EventMessenger.StopListening("LevelComplete", FreezeMovement);
     }
     public virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         inputController = GetComponent<InputController>();
         collider2d = GetComponent<Collider2D>();
-
-        //groundCheck = transform.GetChild(0);
     }
 
     private void FixedUpdate()
     {
-        //if (GameManager.isGameActive)
-        {
-            MovementUpdate();
-        }
+        MovementUpdate();
+        AdditionalForceUpdate();
     }
     void Update()
     {
@@ -85,8 +83,31 @@ public class SpriteMovement : MonoBehaviour
                     inputController.isFalling = false;
                 }
             }
-
-            additionalForce -= additionalForceDecrement;
+        }
+        
+    }
+    private void FreezeMovement()
+    {
+        rb.gravityScale = 0;
+        rb.constraints = RigidbodyConstraints2D.FreezePosition;
+    }
+    private void AdditionalForceUpdate()
+    {
+        if (additionalForce.x > 0)
+        {
+            additionalForce.x -= additionalForceDecrement.x * Time.fixedDeltaTime;
+        }
+        else if (additionalForce.x < 0)
+        {
+            additionalForce.x += additionalForceDecrement.x * Time.fixedDeltaTime;
+        }
+        if (additionalForce.y > 0)
+        {
+            additionalForce.y -= additionalForceDecrement.y * Time.fixedDeltaTime;
+        }
+        else if (additionalForce.y < 0)
+        {
+            additionalForce.y += additionalForceDecrement.y * Time.fixedDeltaTime;
         }
     }
     protected virtual void InputControllerDisabled()

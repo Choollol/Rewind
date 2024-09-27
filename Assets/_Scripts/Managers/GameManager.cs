@@ -7,6 +7,7 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
+
     public static GameManager Instance { get { return instance; } }
 
     public static bool isGameActive { get; private set; }
@@ -28,7 +29,7 @@ public class GameManager : MonoBehaviour
         EventMessenger.StartListening("FreezeTime", FreezeTime);
         EventMessenger.StartListening("UnfreezeTime", UnfreezeTime);
         EventMessenger.StartListening("Restart", Restart);
-        EventMessenger.StartListening("TransitionEnded", EndTransition);
+        EventMessenger.StartListening("TransitionEnded", TransitionEnded);
     }
     private void OnDisable()
     {
@@ -36,7 +37,7 @@ public class GameManager : MonoBehaviour
         EventMessenger.StopListening("FreezeTime", FreezeTime);
         EventMessenger.StopListening("UnfreezeTime", UnfreezeTime);
         EventMessenger.StopListening("Restart", Restart);
-        EventMessenger.StopListening("TransitionEnded", EndTransition);
+        EventMessenger.StopListening("TransitionEnded", TransitionEnded);
     }
 
     void Start()
@@ -47,14 +48,19 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetButtonDown("Restart") && !isGameCompleted && isGameActive)
-        {
-            Restart();
+        if (!isGameCompleted && isGameActive) {
+            if (Input.GetButtonDown("Restart"))
+            {
+                Restart();
+            }
+            else if (Input.GetButtonDown("Skip"))
+            {
+                EventMessenger.TriggerEvent("LevelComplete");
+            }
         }
     }
     private void Restart()
     {
-        FreezeTime();
         SceneManager.UnloadSceneAsync("Level " + level);
         LoadLevel();
     }
@@ -93,9 +99,9 @@ public class GameManager : MonoBehaviour
         EventMessenger.TriggerEvent("EndTransition");        
         yield break;
     }
-    private void EndTransition()
+    private void TransitionEnded()
     {
-        isGameActive = true;
+        UnfreezeTime();
         isInSceneTransit = false;
     }
     private void LoadLevel()
@@ -111,7 +117,6 @@ public class GameManager : MonoBehaviour
             isGameCompleted = true;
             levelText.gameObject.SetActive(false);
         }
-        UnfreezeTime();
     }
     private void UpdateLevelText()
     {

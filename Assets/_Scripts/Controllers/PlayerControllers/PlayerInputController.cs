@@ -13,13 +13,13 @@ public class PlayerInputController : InputController
     {
         base.OnEnable();
 
-        EventMessenger.StartListening("PlayerRewinded", ResetDirection);
+        EventMessenger.StartListening("ResetPlayerDirection", ResetDirection);
     }
     public override void OnDisable()
     {
         base.OnDisable();
 
-        EventMessenger.StopListening("PlayerRewinded", ResetDirection);
+        EventMessenger.StopListening("ResetPlayerDirection", ResetDirection);
     }
     public override void Start()
     {
@@ -66,27 +66,18 @@ public class PlayerInputController : InputController
     private void ResetDirection()
     {
         direction = startingDirection;
-        if (direction == Direction.Left)
-        {
-            horizontalInput = -1;
-        }
-        else if (direction == Direction.Right)
-        {
-            horizontalInput = 1;
-        }
     }
     private void ToggleDirection()
     {
         if (direction == Direction.Left)
         {
             direction = Direction.Right;
-            //horizontalInput = 1;
         }
         else if (direction == Direction.Right)
         {
             direction = Direction.Left;
-            //horizontalInput = -1;
         }
+        EventMessenger.TriggerEvent("PlayerDirectionChanged");
     }
     private void OnCollisionStay2D(Collision2D collision)
     {

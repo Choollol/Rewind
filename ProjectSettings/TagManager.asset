@@ -10,6 +10,8 @@ TagManager:
   - Bounce
   - BounceGate
   - StaticGate
+  - Launch
+  - LaunchGate
   layers:
   - Default
   - TransparentFX

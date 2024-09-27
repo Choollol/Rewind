@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 
 public class PlayerRewinder : MonoBehaviour
 {
     public enum RewindType
     {
-        Static, Bounce
+        Static, Bounce, Launch
     }
 
     private SpriteRenderer spriteRenderer;
@@ -21,6 +22,8 @@ public class PlayerRewinder : MonoBehaviour
     private RewindType rewindType = RewindType.Static;
 
     public int rewinds;
+
+    private List<GameObject> rewindShadowList = new List<GameObject>();
     private void OnEnable()
     {
         EventMessenger.StartListening("Rewind", Rewind);
@@ -40,6 +43,24 @@ public class PlayerRewinder : MonoBehaviour
 
         StartCoroutine(PreventRewind());
     }
+    private void Update()
+    {
+        if (Input.GetButtonDown("Reset") || transform.position.y < -6)
+        {
+            ResetPosition();
+        }
+        if (Input.GetButtonDown("Undo") && rewindShadowList.Count > 0)
+        {
+            Undo();
+        }
+    }
+    private void Undo()
+    {
+        ResetPosition();
+        UpdateRewinds(rewinds + 1);
+        Destroy(rewindShadowList[rewindShadowList.Count - 1]);
+        rewindShadowList.RemoveAt(rewindShadowList.Count - 1);
+    }
     private IEnumerator PreventRewind()
     {
         GameManager.canRewind = false;
@@ -49,15 +70,24 @@ public class PlayerRewinder : MonoBehaviour
     }
     private void Rewind()
     {
-        Instantiate(rewindShadows[(int)rewindType], transform.position, Quaternion.identity);
-        transform.position = startPos;
-        GetComponent<Rigidbody2D>().velocity = Vector3.zero;
-        rewindType = startRewindType;
-        UpdateColor();
+        rewindShadowList.Add(Instantiate(rewindShadows[(int)rewindType], transform.position, Quaternion.identity));
         EventMessenger.TriggerEvent("PlayerRewinded");
-        rewinds--;
+        UpdateRewinds(rewinds - 1);
+    }
+    private void UpdateRewinds(int newRewinds)
+    {
+        rewinds = newRewinds;
         UpdateRewindsText();
         StartCoroutine(PreventRewind());
+        ResetPosition();
+    }
+    private void ResetPosition()
+    {
+        rewindType = startRewindType;
+        transform.position = startPos;
+        GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+        UpdateColor();
+        EventMessenger.TriggerEvent("ResetPlayerDirection");
     }
     private void UpdateRewindsText()
     {
@@ -82,6 +112,10 @@ public class PlayerRewinder : MonoBehaviour
         else if (collision.gameObject.CompareTag("BounceGate"))
         {
             newRewindType = RewindType.Bounce;
+        }
+        else if (collision.gameObject.CompareTag("LaunchGate"))
+        {
+            newRewindType = RewindType.Launch;
         }
         if (rewindType != newRewindType)
         {

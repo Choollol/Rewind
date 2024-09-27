@@ -5,13 +5,6 @@ using UnityEngine;
 public class SpriteDeath : MonoBehaviour
 {
     private bool isAlive = true;
-    private void Update()
-    {
-        if (transform.position.y < -5)
-        {
-            Death();
-        }
-    }
     private void Death()
     {
         AudioPlayer.PlaySound("Death Sound");

@@ -199,6 +199,8 @@ MonoBehaviour:
     m_Bits: 1
   jumpForce: 20
   speed: 5
+  additionalForceDecrement: {x: 10, y: 0}
+  additionalForceInitial: 10
 --- !u!114 &4324281333046780911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,6 +216,7 @@ MonoBehaviour:
   rewindShadows:
   - {fileID: 1215333102213680725, guid: 20f5e78a9d91b254d80d1fad794c0151, type: 3}
   - {fileID: 3394928416851410641, guid: fc48818a059b00448a93f57c20bf90fc, type: 3}
+  - {fileID: 4730087469958631021, guid: 258aa41db4f6cdc4c9ae20b0a08fbc84, type: 3}
   startRewindType: 0
   rewinds: 1
 --- !u!114 &5125103533888571169
