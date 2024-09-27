@@ -45,13 +45,16 @@ public class PlayerRewinder : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetButtonDown("Reset") || transform.position.y < -5.3)
+        if (GameManager.isGameActive)
         {
-            ResetPosition();
-        }
-        if (Input.GetButtonDown("Undo") && rewindShadowList.Count > 0)
-        {
-            Undo();
+            if (Input.GetButtonDown("Reset") || transform.position.y < -5.3)
+            {
+                ResetPosition();
+            }
+            if (Input.GetButtonDown("Undo") && rewindShadowList.Count > 0)
+            {
+                Undo();
+            }
         }
     }
     private void Undo()

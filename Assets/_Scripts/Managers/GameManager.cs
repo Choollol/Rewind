@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class GameManager : MonoBehaviour
     public static bool canRewind = true;
 
     [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private TextMeshProUGUI levelTitle;
+    [SerializeField] private List<string> levelTitles;
 
     private void OnEnable()
     {
@@ -56,6 +59,10 @@ public class GameManager : MonoBehaviour
             else if (Input.GetButtonDown("Skip"))
             {
                 EventMessenger.TriggerEvent("LevelComplete");
+            }
+            else if (Input.GetButtonDown("Hint"))
+            {
+                levelTitle.gameObject.SetActive(true);
             }
         }
     }
@@ -123,5 +130,7 @@ public class GameManager : MonoBehaviour
     private void UpdateLevelText()
     {
         levelText.text = level.ToString();
+        levelTitle.text = "\"" + levelTitles[level - 1] + "\"";
+        levelTitle.gameObject.SetActive(false);
     }
 }
