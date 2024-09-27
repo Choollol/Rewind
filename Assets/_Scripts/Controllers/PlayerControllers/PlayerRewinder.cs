@@ -45,7 +45,7 @@ public class PlayerRewinder : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetButtonDown("Reset") || transform.position.y < -6)
+        if (Input.GetButtonDown("Reset") || transform.position.y < -5.3)
         {
             ResetPosition();
         }

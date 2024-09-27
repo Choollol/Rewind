@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
     }
     private void Restart()
     {
+        canRewind = false;
         SceneManager.UnloadSceneAsync("Level " + level);
         LoadLevel();
     }
@@ -117,6 +118,7 @@ public class GameManager : MonoBehaviour
             isGameCompleted = true;
             levelText.gameObject.SetActive(false);
         }
+        canRewind = true;
     }
     private void UpdateLevelText()
     {
