@@ -86,10 +86,13 @@ public class SpriteMovement : MonoBehaviour
         }
         
     }
-    private void FreezeMovement()
+    protected void FreezeMovement()
     {
-        rb.gravityScale = 0;
-        rb.constraints = RigidbodyConstraints2D.FreezePosition;
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+    }
+    protected void UnfreezeMovement()
+    {
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
     private void AdditionalForceUpdate()
     {
@@ -152,10 +155,12 @@ public class SpriteMovement : MonoBehaviour
         // Variable jump height
         if (!inputController.isJumpHeld && rb.velocity.y > 0 && minJumpTimeCounter > minJumpTime && inputController.isJumping)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.96f);
+            //rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.96f);
+            rb.velocity -= new Vector2(0, rb.velocity.y * 0.04f * 800 * Time.deltaTime);
 
             coyoteTimeCounter = 0;
         }
+
         if (inputController.isJumping)
         {
             minJumpTimeCounter += dt;

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5834260713361232591}
   - component: {fileID: 6040183180532117225}
   - component: {fileID: 4324281333046780911}
-  - component: {fileID: 5125103533888571169}
+  - component: {fileID: 7048095505511055765}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -53,7 +53,7 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_GravityScale: 3
   m_Material: {fileID: 6200000, guid: 5661fba7cb844c440aa5558b2acd208f, type: 2}
   m_IncludeLayers:
@@ -109,7 +109,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
 --- !u!212 &4750622865732657619
 SpriteRenderer:
@@ -219,7 +219,10 @@ MonoBehaviour:
   - {fileID: 4730087469958631021, guid: 258aa41db4f6cdc4c9ae20b0a08fbc84, type: 3}
   startRewindType: 0
   rewinds: 1
---- !u!114 &5125103533888571169
+  rewindParticle: {fileID: 6127957540834467096, guid: 30939234e908ec34088cd5748799de28, type: 3}
+  rewindParticleInterval: 0.2
+  rewindParticleIntervalDecrement: 2
+--- !u!114 &7048095505511055765
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -228,7 +231,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3005969458939723067}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fdd2bed6eb662543a50b31297d6804c, type: 3}
+  m_Script: {fileID: 11500000, guid: cca6f0c8a89bf16448ed0d461ad4ec92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &9002009461377693735

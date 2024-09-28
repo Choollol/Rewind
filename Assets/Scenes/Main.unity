@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &373372348
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1400,14 +1400,14 @@ MonoBehaviour:
   - Double dipping
   - Pinpoint stacking
   - Hole in three
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Underneath
+  - Stop the launch
+  - Bounce low
+  - High ground
+  - One blue, one line
   - More bouncing
   - Even more bouncing
-  - 
+  - Good luck
 --- !u!4 &1675807306
 Transform:
   m_ObjectHideFlags: 0

@@ -51,6 +51,10 @@ public class AudioPlayer : MonoBehaviour
     {
         return sounds[key].isPlaying;
     }
+    public static float GetProgress(string key)
+    {
+        return sounds[key].time / sounds[key].clip.length;
+    }
     public static IEnumerator FadeAudio(string key, float duration, float targetVolume)
     {
         if (sounds[key].volume == targetVolume) { yield break; }

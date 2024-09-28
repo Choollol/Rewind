@@ -32,6 +32,8 @@ public class PlayerInputController : InputController
         boxCollider = GetComponent<BoxCollider2D>();
 
         ResetDirection();
+
+        //isJumpHeld = true;
     }
     public override void Update()
     {
@@ -43,25 +45,6 @@ public class PlayerInputController : InputController
         }
 
         doJump = false;
-        if (Input.GetButtonDown("Rewind") && GameManager.canRewind && GameManager.isGameActive && 
-            GetComponent<PlayerRewinder>().rewinds > 0)
-        {
-            StartCoroutine(StartRewind());
-        }
-    }
-    private IEnumerator StartRewind()
-    {
-        GameManager.canRewind = false;
-        AudioPlayer.PlaySound("Rewind Sound");
-        EventMessenger.TriggerEvent("FreezeTime");
-        while (AudioPlayer.IsSoundPlaying("Rewind Sound"))
-        {
-            yield return null;
-        }
-        EventMessenger.TriggerEvent("Rewind");
-        EventMessenger.TriggerEvent("UnfreezeTime");
-        ResetDirection();
-        yield break;
     }
     private void ResetDirection()
     {

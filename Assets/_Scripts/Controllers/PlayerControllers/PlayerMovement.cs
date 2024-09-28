@@ -12,6 +12,9 @@ public class PlayerMovement : SpriteMovement
 
         EventMessenger.StartListening("PlayerDirectionChanged", ResetAdditionalForce);
         EventMessenger.StartListening("PlayerRewinded", ResetAdditionalForce);
+        EventMessenger.StartListening("ResetPlayerDirection", ResetAdditionalForce);
+        EventMessenger.StartListening("FreezePlayer", FreezeMovement);
+        EventMessenger.StartListening("UnfreezePlayer", UnfreezeMovement);
     }
     public override void OnDisable()
     {
@@ -19,10 +22,14 @@ public class PlayerMovement : SpriteMovement
 
         EventMessenger.StopListening("PlayerDirectionChanged", ResetAdditionalForce);
         EventMessenger.StopListening("PlayerRewinded", ResetAdditionalForce);
+        EventMessenger.StopListening("ResetPlayerDirection", ResetAdditionalForce);
+        EventMessenger.StopListening("FreezePlayer", FreezeMovement);
+        EventMessenger.StopListening("FreezePlayer", UnfreezeMovement);
     }
     private void ResetAdditionalForce()
     {
         additionalForce = Vector2.zero;
+        rb.velocity = Vector2.zero;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {

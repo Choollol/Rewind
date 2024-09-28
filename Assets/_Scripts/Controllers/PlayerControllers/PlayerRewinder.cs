@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 
 public class PlayerRewinder : MonoBehaviour
 {
@@ -23,14 +22,20 @@ public class PlayerRewinder : MonoBehaviour
 
     public int rewinds;
 
+    [SerializeField] private GameObject rewindParticle;
+    private bool doInstantiateRewindParticle;
+    [SerializeField] private float rewindParticleInterval;
+    [SerializeField] private float rewindParticleIntervalDecrement;
+    private float rewindParticleTimer;
+
     private List<GameObject> rewindShadowList = new List<GameObject>();
     private void OnEnable()
     {
-        EventMessenger.StartListening("Rewind", Rewind);
+        EventMessenger.StartListening("Restart", StopRewind);
     }
     private void OnDisable()
     {
-        EventMessenger.StopListening("Rewind", Rewind);
+        EventMessenger.StopListening("Restart", StopRewind);
     }
     private void Start()
     {
@@ -55,7 +60,50 @@ public class PlayerRewinder : MonoBehaviour
             {
                 Undo();
             }
+            if (Input.GetButtonDown("Rewind") && GameManager.canRewind && rewinds > 0)
+            {
+                StartCoroutine(StartRewind());
+            }
         }
+    }
+    private IEnumerator HandleRewindParticles()
+    {
+        rewindParticleTimer = rewindParticleInterval;
+        while (doInstantiateRewindParticle) {
+            Instantiate(rewindParticle, transform.position, Quaternion.identity);
+            yield return new WaitForSeconds(rewindParticleTimer);
+            rewindParticleTimer -= rewindParticleIntervalDecrement * Time.deltaTime;
+        }
+        yield break;
+    }
+    private void StopRewind()
+    {
+        StopAllCoroutines();
+        EventMessenger.TriggerEvent("UnfreezeTime");
+        StartCoroutine(PreventRewind());
+    }
+    private IEnumerator StartRewind()
+    {
+        doInstantiateRewindParticle = true;
+        StartCoroutine(HandleRewindParticles());
+        GameManager.canRewind = false;
+        AudioPlayer.PlaySound("Rewind Sound");
+        EventMessenger.TriggerEvent("FreezeTime");
+        EventMessenger.TriggerEvent("FreezePlayer");
+        while (AudioPlayer.IsSoundPlaying("Rewind Sound"))
+        {
+            if (AudioPlayer.GetProgress("Rewind Sound") > 0.9f)
+            {
+                doInstantiateRewindParticle = false;
+            }
+            yield return null;
+        }
+        Rewind();
+        EventMessenger.TriggerEvent("UnfreezeTime");
+        EventMessenger.TriggerEvent("UnfreezePlayer");
+        EventMessenger.TriggerEvent("ResetPlayerDirection");
+        EventMessenger.TriggerEvent("PlayerRewinded");
+        yield break;
     }
     private void Undo()
     {
@@ -74,7 +122,6 @@ public class PlayerRewinder : MonoBehaviour
     private void Rewind()
     {
         rewindShadowList.Add(Instantiate(rewindShadows[(int)rewindType], transform.position, Quaternion.identity));
-        EventMessenger.TriggerEvent("PlayerRewinded");
         UpdateRewinds(rewinds - 1);
     }
     private void UpdateRewinds(int newRewinds)
@@ -90,6 +137,7 @@ public class PlayerRewinder : MonoBehaviour
         transform.position = startPos;
         GetComponent<Rigidbody2D>().velocity = Vector3.zero;
         UpdateColor();
+        StartCoroutine(PreventRewind());
         EventMessenger.TriggerEvent("ResetPlayerDirection");
     }
     private void UpdateRewindsText()

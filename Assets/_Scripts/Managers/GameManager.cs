@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 
 public class GameManager : MonoBehaviour
 {
@@ -47,7 +46,9 @@ public class GameManager : MonoBehaviour
     {
         isGameActive = true;
 
-        level = int.Parse(SceneManager.GetSceneAt(1).name.Split(" ")[1]);
+        //level = int.Parse(SceneManager.GetSceneAt(1).name.Split(" ")[1]);
+        level = 11;
+        LoadLevel();
     }
     private void Update()
     {
@@ -59,6 +60,10 @@ public class GameManager : MonoBehaviour
             else if (Input.GetButtonDown("Skip"))
             {
                 EventMessenger.TriggerEvent("LevelComplete");
+            }
+            else if (Input.GetButtonDown("Back"))
+            {
+                StartCoroutine(TransitionLevel(level - 1));
             }
             else if (Input.GetButtonDown("Hint"))
             {
@@ -75,7 +80,7 @@ public class GameManager : MonoBehaviour
     private void FreezeTime()
     {
         isGameActive = false;
-        Time.timeScale = 0;
+        //Time.timeScale = 0;
 
     }
     private void UnfreezeTime()
@@ -104,7 +109,8 @@ public class GameManager : MonoBehaviour
         level = newLevel;
         LoadLevel();
         yield return new WaitForSeconds(0.5f);
-        EventMessenger.TriggerEvent("EndTransition");        
+        EventMessenger.TriggerEvent("EndTransition");
+        levelTitle.gameObject.SetActive(false);
         yield break;
     }
     private void TransitionEnded()
@@ -131,6 +137,5 @@ public class GameManager : MonoBehaviour
     {
         levelText.text = level.ToString();
         levelTitle.text = "\"" + levelTitles[level - 1] + "\"";
-        levelTitle.gameObject.SetActive(false);
     }
 }

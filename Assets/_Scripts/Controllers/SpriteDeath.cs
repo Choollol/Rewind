@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class SpriteDeath : MonoBehaviour
 {
-    private bool isAlive = true;
-    private void Death()
+    protected bool isAlive = true;
+    protected virtual void Death()
     {
-        AudioPlayer.PlaySound("Death Sound");
-        EventMessenger.TriggerEvent("Restart");
-        isAlive = false;
+        
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
