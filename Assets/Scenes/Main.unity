@@ -1385,6 +1385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 952ac8d7ac7faac45952526708f85c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startingLevel: 1
   levelText: {fileID: 1463250513}
   levelTitle: {fileID: 373372349}
   levelTitles:

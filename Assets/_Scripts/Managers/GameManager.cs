@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public static bool isGameActive { get; private set; }
 
     public static int level {  get; private set; }
+    [SerializeField] private int startingLevel;
 
     public static bool isInSceneTransit { get; private set; }
     public static bool isGameCompleted { get; private set; }
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     public static bool isTimeFrozen = false;
 
     public static bool canRewind = true;
+
 
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private TextMeshProUGUI levelTitle;
@@ -47,7 +49,7 @@ public class GameManager : MonoBehaviour
         isGameActive = true;
 
         //level = int.Parse(SceneManager.GetSceneAt(1).name.Split(" ")[1]);
-        level = 11;
+        level = startingLevel;
         LoadLevel();
     }
     private void Update()
@@ -73,9 +75,15 @@ public class GameManager : MonoBehaviour
     }
     private void Restart()
     {
+        StartCoroutine(HandleRestart());
+    }
+    private IEnumerator HandleRestart()
+    {
         canRewind = false;
+        AsyncOperation load = LoadLevel();
+        yield return load;
         SceneManager.UnloadSceneAsync("Level " + level);
-        LoadLevel();
+        yield break;
     }
     private void FreezeTime()
     {
@@ -118,20 +126,22 @@ public class GameManager : MonoBehaviour
         UnfreezeTime();
         isInSceneTransit = false;
     }
-    private void LoadLevel()
+    private AsyncOperation LoadLevel()
     {
+        AsyncOperation load;
         if (SceneUtility.GetBuildIndexByScenePath("Level " + level) != -1)
         {
-            SceneManager.LoadSceneAsync("Level " + level, LoadSceneMode.Additive);
+            load = SceneManager.LoadSceneAsync("Level " + level, LoadSceneMode.Additive);
             UpdateLevelText();
         }
         else
         {
-            SceneManager.LoadSceneAsync("End Scene", LoadSceneMode.Additive);
+           load = SceneManager.LoadSceneAsync("End Scene", LoadSceneMode.Additive);
             isGameCompleted = true;
             levelText.gameObject.SetActive(false);
         }
         canRewind = true;
+        return load;
     }
     private void UpdateLevelText()
     {
